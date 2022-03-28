@@ -19,14 +19,26 @@ public class Generics {
         gen.printObject(third);
         System.out.println();
 
-//        gen.printBoundedWildCard(first);
+        /**
+         * gen.printBoundedWildCard(first);
+         *
+         * работать не будет, так как принимает агрумент типа List<? extends Predator> list
+         * (ограничен сверху и может принять параметр типа List<Predator> или List<Tiger>)
+         * а параметр first имеет тип List<Animal>
+         */
         gen.printBoundedWildCard(second);
         gen.printBoundedWildCard(third);
         System.out.println();
 
         gen.printLowerBoundedWildCard(first);
         gen.printLowerBoundedWildCard(second);
-//        gen.printLowerBoundedWildCard(third);
+        /**
+         *  gen.printLowerBoundedWildCard(third);
+         *
+         * работать не будет, так как принимает агрумент типа List<? super Predator> list
+         * (ограничен снизу и может принять параметр типа List<Predator> или List<Animal>)
+         * а параметр first имеет тип List<Animal>
+         */
     }
 
     public void printObject(List<?> list) {
