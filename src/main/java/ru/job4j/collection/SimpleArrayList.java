@@ -84,9 +84,10 @@ public class SimpleArrayList<T> implements List<T> {
     private void increaseContainer() {
         if (container.length == 0) {
             container = Arrays.copyOf(container, 2);
-        }
-        if (container.length == size) {
-            container = Arrays.copyOf(container, container.length * 2);
+        } else {
+            if (container.length == size) {
+                container = Arrays.copyOf(container, container.length * 2);
+            }
         }
     }
 }
