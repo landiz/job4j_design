@@ -28,7 +28,15 @@ public class SimpleLinkedList<E> implements List<E> {
     @Override
     public E get(int index) {
         Objects.checkIndex(index, size);
-        return getNodeByIndex(index);
+        if (index > size - 1) {
+            throw new IndexOutOfBoundsException();
+        } else {
+            Node<E> elem = first;
+            for (int i = 0; i < index; i++) {
+                elem = elem.next;
+            }
+            return elem.item;
+        }
     }
 
     @Override
@@ -37,13 +45,13 @@ public class SimpleLinkedList<E> implements List<E> {
         int expectedModCount = modCount;
 
         return new Iterator<E>() {
-            private Node<E> lastReturned;
+            private Node<E> lastReturned = new Node<>(null, null, first);
             private Node<E> next = first;
-            private int index;
 
             @Override
             public boolean hasNext() {
-                return index < size;
+                return (lastReturned.next != null);
+
             }
 
             @Override
@@ -56,22 +64,9 @@ public class SimpleLinkedList<E> implements List<E> {
                 }
                 lastReturned = next;
                 next = next.next;
-                index++;
                 return lastReturned.item;
             }
         };
-    }
-
-    private E getNodeByIndex(int index) {
-        if (index > size - 1) {
-            throw new IndexOutOfBoundsException();
-        } else {
-            Node<E> elem = first;
-            for (int i = 0; i < index; i++) {
-                elem = elem.next;
-            }
-            return elem.item;
-        }
     }
 
     private static class Node<E> {
