@@ -28,15 +28,11 @@ public class SimpleLinkedList<E> implements List<E> {
     @Override
     public E get(int index) {
         Objects.checkIndex(index, size);
-        if (index > size - 1) {
-            throw new IndexOutOfBoundsException();
-        } else {
             Node<E> elem = first;
             for (int i = 0; i < index; i++) {
                 elem = elem.next;
             }
             return elem.item;
-        }
     }
 
     @Override
@@ -50,15 +46,14 @@ public class SimpleLinkedList<E> implements List<E> {
 
             @Override
             public boolean hasNext() {
+                if (!(expectedModCount == modCount)) {
+                    throw new ConcurrentModificationException();
+                }
                 return (lastReturned.next != null);
-
             }
 
             @Override
             public E next() {
-                if (!(expectedModCount == modCount)) {
-                    throw new ConcurrentModificationException();
-                }
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
