@@ -20,13 +20,7 @@ public class ForwardLinked<T> implements Iterable<T> {
     }
 
     public void addFirst(T value) {
-        Node<T> node;
-        if (head != null) {
-            node = new Node<T>(value, head);
-        } else {
-            node = new Node<T>(value, null);
-        }
-        head = node;
+        head = (head != null) ? new Node<T>(value, head) : new Node<T>(value, null);
     }
 
     @Override
