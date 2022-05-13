@@ -20,13 +20,13 @@ public class SimpleSet<T> implements Set<T> {
 
     @Override
     public boolean contains(T value) {
+        boolean result = false;
         for (int i = 0; i < set.size(); i++) {
-//        while (set.size()) {
             if (iterator().next() == null || iterator().next().equals(value)) {
-                return true;
+                result = true;
             }
         }
-        return false;
+        return result;
     }
 
     @Override
