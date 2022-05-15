@@ -72,4 +72,5 @@ public class SimpleSetTest {
         set.add(4);
         iterator.next();
     }
+
 }
