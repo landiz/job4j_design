@@ -1,4 +1,6 @@
-package ru.job4j.list;
+package ru.job4j.collection;
+
+import ru.job4j.list.List;
 
 import java.util.*;
 
@@ -72,7 +74,7 @@ public class SimpleArrayList<T> implements List<T> {
 
             @Override
             public T next() {
-                if (!(expectedModCount == modCount)) {
+                if ((expectedModCount != modCount)) {
                     throw new ConcurrentModificationException();
                 }
                 if (!hasNext()) {
