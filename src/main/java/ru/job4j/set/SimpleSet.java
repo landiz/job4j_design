@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 public class SimpleSet<T> implements Set<T> {
 
-    private SimpleArrayList<T> set = new SimpleArrayList<>(2);
+    private SimpleArrayList<T> set = new SimpleArrayList<>();
 
     @Override
     public boolean add(T value) {

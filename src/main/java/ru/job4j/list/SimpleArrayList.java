@@ -1,6 +1,4 @@
-package ru.job4j.collection;
-
-import ru.job4j.list.List;
+package ru.job4j.list;
 
 import java.util.*;
 
@@ -14,6 +12,10 @@ public class SimpleArrayList<T> implements List<T> {
 
     public SimpleArrayList(int capacity) {
         this.container = (T[]) new Object[capacity];
+    }
+
+    public SimpleArrayList() {
+        this.container = (T[]) new Object[2];
     }
 
     @Override
