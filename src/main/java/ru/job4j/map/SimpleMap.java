@@ -19,13 +19,14 @@ public class SimpleMap<K, V> implements Map<K, V> {
 
     @Override
     public boolean put(K key, V value) {
+        if (count >= capacity * 0.75) {
+            expand();
+        }
         int i, hashcode;
         boolean rtn = false;
         hashcode = key.hashCode();
         int hash = hash(hashcode);
-        if (count >= capacity * 0.75) {
-            expand();
-        }
+
         if (table[indexFor(hash)] == null) {
             i = indexFor(hash);
             table[i] = new MapEntry(key, value);
@@ -48,7 +49,7 @@ public class SimpleMap<K, V> implements Map<K, V> {
 
     private void expand() {
         capacity = capacity * 2;
-        table = Arrays.copyOf(table, table.length * 2);
+        table = Arrays.copyOf(table, capacity * 2);
     }
 
     @Override
