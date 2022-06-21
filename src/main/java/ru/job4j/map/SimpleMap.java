@@ -38,7 +38,6 @@ public class SimpleMap<K, V> implements Map<K, V> {
 
 
     private int hash(int hashCode) {
-        int h;
         return (hashCode == 0) ? 0 : (hashCode) ^ (hashCode >>> 16);
     }
 
@@ -48,10 +47,8 @@ public class SimpleMap<K, V> implements Map<K, V> {
     }
 
     private void expand() {
-        System.out.println(table);
         capacity = capacity * 2;
         table = Arrays.copyOf(table, table.length * 2);
-        System.out.println(table);
     }
 
     @Override
@@ -71,8 +68,6 @@ public class SimpleMap<K, V> implements Map<K, V> {
         boolean rtn = false;
         int hashcode = key.hashCode();
         for (int i = 0; i < table.length; i++) {
-//            int entr = table[i].key.hashCode();
-//        int hashCodeEntry;
             if (table[i] != null && table[i].key.hashCode() == hashcode) {
                 table[i] = null;
                 modCount++;

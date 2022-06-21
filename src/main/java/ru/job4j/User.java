@@ -25,6 +25,5 @@ public class User {
         Map<User, Object> myHashMap = new HashMap<>();
         myHashMap.put(user1, new Object());
         myHashMap.put(user2, new Object());
-        System.out.println(myHashMap);
     }
 }
