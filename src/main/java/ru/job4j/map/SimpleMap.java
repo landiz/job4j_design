@@ -49,17 +49,29 @@ public class SimpleMap<K, V> implements Map<K, V> {
 
     private void expand() {
         capacity = capacity * 2;
-        table = Arrays.copyOf(table, capacity * 2);
+        MapEntry<K, V>[] tableExp = new MapEntry[capacity];
+        table = Arrays.copyOf(table, capacity);
+        for (int i = 0; i < capacity / 2; i++) {
+            if (table[i] != null) {
+                int hashcode = table[i].key.hashCode();
+                int hash = hash(hashcode);
+                int index = indexFor(hash);
+                if (tableExp[index] == null) {
+                    tableExp[index] = new MapEntry(table[i].key, table[i].value);
+                }
+            }
+        }
+        table = Arrays.copyOf(tableExp, capacity);
     }
 
     @Override
     public V get(K key) {
         V rtn = null;
         int hashcode = key.hashCode();
-        for (int i = 0; i < table.length; i++) {
-            if (table[i] != null && table[i].key.hashCode() == hashcode) {
-                rtn = table[i].value;
-            }
+        int hash = hash(hashcode);
+        int index = indexFor(hash);
+        if (table[index] != null) {
+            rtn = table[index].value;
         }
         return rtn;
     }
@@ -68,12 +80,12 @@ public class SimpleMap<K, V> implements Map<K, V> {
     public boolean remove(K key) {
         boolean rtn = false;
         int hashcode = key.hashCode();
-        for (int i = 0; i < table.length; i++) {
-            if (table[i] != null && table[i].key.hashCode() == hashcode) {
-                table[i] = null;
-                modCount++;
-                rtn = true;
-            }
+        int hash = hash(hashcode);
+        int index = indexFor(hash);
+        if (table[index] != null) {
+            table[index] = null;
+            modCount++;
+            rtn = true;
         }
         return rtn;
     }

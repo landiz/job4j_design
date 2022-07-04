@@ -21,7 +21,7 @@ public class SimpleMapTest {
     public void whenAddThenGetNotExistValue() {
         Map<String, String> map = new SimpleMap<>();
         assertTrue(map.put("key", "value"));
-        assertNotEquals("value", map.get("notValue"));
+        assertNotEquals("value", map.get("notExitingValue"));
     }
 
     @Test
