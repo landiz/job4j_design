@@ -59,4 +59,15 @@ public class SimpleMapTest {
         Map<String, String> map = new SimpleMap<>();
         map.iterator().next();
     }
+
+    @Test(expected = NoSuchElementException.class)
+    public void whenIterHashNextFalseThenNextThrowException() {
+        Map<String, String> map = new SimpleMap<>();
+        map.put("key", "value");
+        map.put("key Num Two", "value");
+        Iterator<String> iterator = map.iterator();
+        assertNotNull(iterator.next());
+        assertNotNull(iterator.next());
+        iterator.next();
+    }
 }

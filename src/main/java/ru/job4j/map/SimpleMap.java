@@ -18,7 +18,7 @@ public class SimpleMap<K, V> implements Map<K, V> {
 
     @Override
     public boolean put(K key, V value) {
-        if (count >= LOAD_FACTOR) {
+        if (count >= capacity * LOAD_FACTOR) {
             expand();
         }
         int i, hashcode;
@@ -66,8 +66,10 @@ public class SimpleMap<K, V> implements Map<K, V> {
         int hashcode = key.hashCode();
         int hash = hash(hashcode);
         int index = indexFor(hash);
-        if (table[index] != null && table[index].key.equals(key)) {
-            rtn = table[index].value;
+        if (table[index] != null) {
+            if (table[index].key.hashCode() == hashcode && table[index].key.equals(key)) {
+                rtn = table[index].value;
+            }
         }
         return rtn;
     }
@@ -78,10 +80,13 @@ public class SimpleMap<K, V> implements Map<K, V> {
         int hashcode = key.hashCode();
         int hash = hash(hashcode);
         int index = indexFor(hash);
-        if (table[index] != null && table[index].key.equals(key)) {
-            table[index] = null;
-            modCount++;
-            rtn = true;
+        if (table[index] != null) {
+            if (table[index].key.hashCode() == hashcode && table[index].key.equals(key)) {
+                table[index] = null;
+                modCount++;
+                count--;
+                rtn = true;
+            }
         }
         return rtn;
     }
@@ -92,15 +97,17 @@ public class SimpleMap<K, V> implements Map<K, V> {
         int expectedModCount = modCount;
 
         return new Iterator<K>() {
-            private int pos;
-            private int index;
+            private int index = 0;
 
             @Override
             public boolean hasNext() {
                 if ((expectedModCount != modCount)) {
                     throw new ConcurrentModificationException();
                 }
-                return this.exist() == 0;
+                while (index < table.length && table[index] == null) {
+                    index++;
+                }
+                return index < table.length;
             }
 
             @Override
@@ -108,22 +115,9 @@ public class SimpleMap<K, V> implements Map<K, V> {
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
-                return table[index].key;
-            }
-
-            private Integer exist() {
-                int value = -1;
-                for (int index = this.pos; index < table.length; index++) {
-                    if (table[index] != null) {
-                        this.pos = index;
-                        value++;
-                        break;
-                    }
-                }
-                return value;
+                return table[index++].key;
             }
         };
-
     }
 
     private static class MapEntry<K, V> {
@@ -135,6 +129,4 @@ public class SimpleMap<K, V> implements Map<K, V> {
             this.value = value;
         }
     }
-
-
 }
