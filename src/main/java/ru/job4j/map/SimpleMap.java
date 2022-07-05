@@ -1,6 +1,5 @@
 package ru.job4j.map;
 
-import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -19,16 +18,15 @@ public class SimpleMap<K, V> implements Map<K, V> {
 
     @Override
     public boolean put(K key, V value) {
-        if (count >= capacity * 0.75) {
+        if (count >= LOAD_FACTOR) {
             expand();
         }
         int i, hashcode;
         boolean rtn = false;
         hashcode = key.hashCode();
         int hash = hash(hashcode);
-
-        if (table[indexFor(hash)] == null) {
-            i = indexFor(hash);
+        i = indexFor(hash);
+        if (table[i] == null) {
             table[i] = new MapEntry(key, value);
             count++;
             modCount++;
@@ -43,25 +41,23 @@ public class SimpleMap<K, V> implements Map<K, V> {
     }
 
     private int indexFor(int hash) {
-        int n = table.length;
-        return (n - 1) & hash;
+        return (capacity - 1) & hash;
     }
 
     private void expand() {
         capacity = capacity * 2;
         MapEntry<K, V>[] tableExp = new MapEntry[capacity];
-        table = Arrays.copyOf(table, capacity);
-        for (int i = 0; i < capacity / 2; i++) {
+        for (int i = 0; i < table.length; i++) {
             if (table[i] != null) {
                 int hashcode = table[i].key.hashCode();
                 int hash = hash(hashcode);
                 int index = indexFor(hash);
                 if (tableExp[index] == null) {
-                    tableExp[index] = new MapEntry(table[i].key, table[i].value);
+                    tableExp[index] = table[i];
                 }
             }
         }
-        table = Arrays.copyOf(tableExp, capacity);
+        table = tableExp;
     }
 
     @Override
@@ -70,7 +66,7 @@ public class SimpleMap<K, V> implements Map<K, V> {
         int hashcode = key.hashCode();
         int hash = hash(hashcode);
         int index = indexFor(hash);
-        if (table[index] != null) {
+        if (table[index] != null && table[index].key.equals(key)) {
             rtn = table[index].value;
         }
         return rtn;
@@ -82,7 +78,7 @@ public class SimpleMap<K, V> implements Map<K, V> {
         int hashcode = key.hashCode();
         int hash = hash(hashcode);
         int index = indexFor(hash);
-        if (table[index] != null) {
+        if (table[index] != null && table[index].key.equals(key)) {
             table[index] = null;
             modCount++;
             rtn = true;
@@ -96,32 +92,38 @@ public class SimpleMap<K, V> implements Map<K, V> {
         int expectedModCount = modCount;
 
         return new Iterator<K>() {
+            private int pos;
             private int index;
 
             @Override
             public boolean hasNext() {
-                boolean rtn = false;
-                for (int j = index; j < table.length; j++) {
-                    if (table[j] != null) {
-                        rtn = true;
-                        break;
-                    }
-                    j++;
+                if ((expectedModCount != modCount)) {
+                    throw new ConcurrentModificationException();
                 }
-                return rtn;
+                return this.exist() == 0;
             }
 
             @Override
             public K next() {
-                if ((expectedModCount != modCount)) {
-                    throw new ConcurrentModificationException();
-                }
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
-                return (K) table[index];
+                return table[index].key;
+            }
+
+            private Integer exist() {
+                int value = -1;
+                for (int index = this.pos; index < table.length; index++) {
+                    if (table[index] != null) {
+                        this.pos = index;
+                        value++;
+                        break;
+                    }
+                }
+                return value;
             }
         };
+
     }
 
     private static class MapEntry<K, V> {
@@ -133,4 +135,6 @@ public class SimpleMap<K, V> implements Map<K, V> {
             this.value = value;
         }
     }
+
+
 }
