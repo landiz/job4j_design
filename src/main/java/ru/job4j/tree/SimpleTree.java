@@ -32,7 +32,7 @@ public class SimpleTree<E> implements Tree<E> {
     @Override
     public boolean isBinary() {
 
-        return !(findByPredicate((el) -> el.children.size() > 2)).isPresent();
+        return (findByPredicate((el) -> el.children.size() > 2)).isEmpty();
     }
 
     @Override
