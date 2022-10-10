@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 public class LogFilter {
     public static void main(String[] args) {
         List<String> log = filter("log.txt");
+        for (String string : log) {
+            System.out.println(string);
+        }
         save(log, "404.txt");
     }
 
