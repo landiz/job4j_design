@@ -18,36 +18,31 @@ public class Config {
         System.out.println(new Config("./data/pairwithoutcomment.properties"));
     }
 
+    @SuppressWarnings("checkstyle:WhitespaceAfter")
     public void load() {
         List<String> list = new ArrayList<>();
         try (BufferedReader read = new BufferedReader(new FileReader(this.path))) {
             read.lines().forEach(s -> list.add(String.valueOf(s)));
             for (String line : list) {
-                if (line.equals("") || line.equals("=") || line.substring(0, 1).equals("#")) {
+                if (line.isBlank() || line.startsWith("#")) {
                     continue;
                 }
-                Map.Entry<String, String> entry = getEntry(line);
-                values.put(entry.getKey(), entry.getValue());
+                if (!line.contains("=")) {
+                    throw new IllegalArgumentException();
+                }
+                if ((line.substring(line.indexOf("=") + 1)).isBlank()) {
+                    throw new IllegalArgumentException();
+                }
+                if ((line.substring(0, line.indexOf("="))).isBlank()) {
+                    throw new IllegalArgumentException();
+                }
+                String key = line.substring(0, line.indexOf("="));
+                String value = line.substring(line.indexOf("=") + 1);
+                values.put(key, value);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private Map.Entry<String, String> getEntry(String line) {
-        if (!line.contains("=")) {
-            throw new IllegalArgumentException();
-        }
-        if (line.substring(line.indexOf("=") + 1).equals("")) {
-            throw new IllegalArgumentException();
-        }
-        if (line.substring(0, line.indexOf("=")).equals("")) {
-            throw new IllegalArgumentException();
-        }
-        String key = line.substring(0, line.indexOf("="));
-        String value = line.substring(line.indexOf("=") + 1);
-
-        return new AbstractMap.SimpleEntry<>(key, value);
     }
 
     public String value(String key) {
@@ -64,5 +59,4 @@ public class Config {
         }
         return out.toString();
     }
-
 }

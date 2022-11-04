@@ -77,7 +77,10 @@ class ConfigTest {
     void whenLineOnlyEqualSign() {
         String path = "./data/lineonlyequalsing.properties";
         Config config = new Config(path);
-        config.load();
-        assertThat(config.value("hibernate.connection.password")).isEqualTo("password=123");
+        try {
+            config.load();
+            Assert.fail("Expected an IllegalArgumentException to be thrown");
+        } catch (IllegalArgumentException e) {
+        }
     }
 }
