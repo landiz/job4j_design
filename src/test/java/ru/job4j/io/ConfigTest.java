@@ -1,9 +1,10 @@
 package ru.job4j.io;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ConfigTest {
 
@@ -27,33 +28,24 @@ class ConfigTest {
     void whenPairWithoutKey() {
         String path = "./data/pairwithoutkey.properties";
         Config config = new Config(path);
-        try {
-            config.load();
-            Assert.fail("Expected an IllegalArgumentException to be thrown");
-        } catch (IllegalArgumentException e) {
-        }
+        Exception exception = assertThrows(Exception.class, () -> config.load());
+        assertEquals("Line 5 '=postgres' is missing Key", exception.getMessage());
     }
 
     @Test
     void whenPairWithoutValue() {
         String path = "./data/pairwithoutvalue.properties";
         Config config = new Config(path);
-        try {
-            config.load();
-            Assert.fail("Expected an IllegalArgumentException to be thrown");
-        } catch (IllegalArgumentException e) {
-        }
+        Exception exception = assertThrows(Exception.class, () -> config.load());
+        assertEquals("Line 5 'hibernate.connection.username=' is missing Value", exception.getMessage());
     }
 
     @Test
     void whenLineWithoutEqualSign() {
         String path = "./data/linewithoutequalsing.properties";
         Config config = new Config(path);
-        try {
-            config.load();
-            Assert.fail("Expected an IllegalArgumentException to be thrown");
-        } catch (IllegalArgumentException e) {
-        }
+        Exception exception = assertThrows(Exception.class, () -> config.load());
+        assertEquals("Line 5 'hibernate.connection.usernameuser' is missing \"=\"", exception.getMessage());
     }
 
     @Test
@@ -77,10 +69,7 @@ class ConfigTest {
     void whenLineOnlyEqualSign() {
         String path = "./data/lineonlyequalsing.properties";
         Config config = new Config(path);
-        try {
-            config.load();
-            Assert.fail("Expected an IllegalArgumentException to be thrown");
-        } catch (IllegalArgumentException e) {
-        }
+        Exception exception = assertThrows(Exception.class, () -> config.load());
+        assertEquals("Line 5'=' is missing Key and Value", exception.getMessage());
     }
 }

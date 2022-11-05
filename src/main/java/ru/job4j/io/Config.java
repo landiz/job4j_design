@@ -8,7 +8,7 @@ import java.util.*;
 public class Config {
 
     private final String path;
-    private final Map<String, String> values = new HashMap<String, String>();
+    private final Map<String, String> values = new HashMap<>();
 
     public Config(final String path) {
         this.path = path;
@@ -27,14 +27,17 @@ public class Config {
                 if (line.isBlank() || line.startsWith("#")) {
                     continue;
                 }
+                if ("=".equals(line)) {
+                    throw new IllegalArgumentException("Line " + (list.indexOf(line) + 1) + "'" + line + "'" + " is missing Key and Value");
+                }
                 if (!line.contains("=")) {
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("Line " + (list.indexOf(line) + 1) + " '" + line + "'" + " is missing \"=\"");
                 }
                 if ((line.substring(line.indexOf("=") + 1)).isBlank()) {
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("Line " + (list.indexOf(line) + 1) + " '" + line + "'" + " is missing Value");
                 }
                 if ((line.substring(0, line.indexOf("="))).isBlank()) {
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("Line " + (list.indexOf(line) + 1) + " '" + line + "'" + " is missing Key");
                 }
                 String key = line.substring(0, line.indexOf("="));
                 String value = line.substring(line.indexOf("=") + 1);
