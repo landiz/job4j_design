@@ -6,28 +6,25 @@ public class Analysis {
     public static void unavailable(String source, String target) {
         boolean serverDown = false;
         String line;
-        try (BufferedReader reader = new BufferedReader(new FileReader(source))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(source));
+             FileOutputStream out = new FileOutputStream(target)) {
             line = reader.readLine();
-            try (FileOutputStream out = new FileOutputStream(target)) {
-                while (line != null) {
-                    String[] words = (line.split(" "));
-                    if ("400".equals(words[0]) || "500".equals(words[0])) {
-                        if (!serverDown) {
-                            out.write(words[1].getBytes());
-                            out.write(";".getBytes());
-                            serverDown = true;
-                        }
-                    } else {
-                        if (serverDown) {
-                            out.write(words[1].getBytes());
-                            out.write(System.lineSeparator().getBytes());
-                            serverDown = false;
-                        }
+            while (line != null) {
+                String[] words = (line.split(" "));
+                if ("400".equals(words[0]) || "500".equals(words[0])) {
+                    if (!serverDown) {
+                        out.write(words[1].getBytes());
+                        out.write(";".getBytes());
+                        serverDown = true;
                     }
-                    line = reader.readLine();
+                } else {
+                    if (serverDown) {
+                        out.write(words[1].getBytes());
+                        out.write(System.lineSeparator().getBytes());
+                        serverDown = false;
+                    }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+                line = reader.readLine();
             }
         } catch (IOException e) {
             e.printStackTrace();
