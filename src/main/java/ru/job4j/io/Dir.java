@@ -13,7 +13,7 @@ public class Dir {
         }
         for (File subfile : file.listFiles()) {
             if (!subfile.isDirectory()) {
-                System.out.println(String.format(subfile.getName() + " : " + subfile.length() / 1024 + "Kb"));
+                System.out.println(String.format("%s  :  %s Kb", subfile.getName(), subfile.length() / 1024));
             }
         }
     }
