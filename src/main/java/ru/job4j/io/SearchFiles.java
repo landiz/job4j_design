@@ -7,17 +7,18 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static java.nio.file.FileVisitResult.CONTINUE;
 
 public class SearchFiles implements FileVisitor<Path> {
 
-    private final String fileName;
+    private final Predicate<Path> checkFile;
     private final Path startDir;
     List<String> paths = new ArrayList<>();
 
-    public SearchFiles(String fileName, Path startDir) {
-        this.fileName = fileName;
+    public SearchFiles(Path startDir, Predicate<Path> checkFile) {
+        this.checkFile = checkFile;
         this.startDir = startDir;
     }
 
@@ -29,7 +30,7 @@ public class SearchFiles implements FileVisitor<Path> {
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
         String nameOfFile = file.getFileName().toString();
-        if (nameOfFile.endsWith(this.fileName)) {
+        if (checkFile.test(file)) {
             paths.add(nameOfFile);
         }
         return CONTINUE;
