@@ -14,8 +14,8 @@ public class Search {
         search(startingDir, p -> p.toFile().getName().endsWith(".txt"));
     }
 
-    public static List<String> search(Path startingDir, Predicate<Path> fileToSearch) throws IOException {
-        SearchFiles searcher = new SearchFiles(startingDir, fileToSearch);
+    public static List<Path> search(Path startingDir, Predicate<Path> fileToSearch) throws IOException {
+        SearchFiles searcher = new SearchFiles(fileToSearch);
         Files.walkFileTree(startingDir, searcher);
         return searcher.getPaths();
     }

@@ -14,12 +14,10 @@ import static java.nio.file.FileVisitResult.CONTINUE;
 public class SearchFiles implements FileVisitor<Path> {
 
     private final Predicate<Path> checkFile;
-    private final Path startDir;
-    List<String> paths = new ArrayList<>();
+    private List<Path> paths = new ArrayList<>();
 
-    public SearchFiles(Path startDir, Predicate<Path> checkFile) {
+    public SearchFiles(Predicate<Path> checkFile) {
         this.checkFile = checkFile;
-        this.startDir = startDir;
     }
 
     @Override
@@ -29,9 +27,8 @@ public class SearchFiles implements FileVisitor<Path> {
 
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-        String nameOfFile = file.getFileName().toString();
         if (checkFile.test(file)) {
-            paths.add(nameOfFile);
+            paths.add(file.getFileName());
         }
         return CONTINUE;
     }
@@ -47,7 +44,7 @@ public class SearchFiles implements FileVisitor<Path> {
         return CONTINUE;
     }
 
-    public List<String> getPaths() {
+    public List<Path> getPaths() {
         return paths;
     }
 }
