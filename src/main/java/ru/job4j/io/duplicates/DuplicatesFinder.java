@@ -1,11 +1,12 @@
 package ru.job4j.io.duplicates;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class DuplicatesFinder {
     public static void main(String[] args) throws IOException {
-        Map<FileProperty, List<String>> duplicatedFiles = DuplicatesVisitor.paths("/Users/landiz/Downloads");
+        Files.walkFileTree(Path.of("/Users/landiz/Downloads/"), new DuplicatesVisitor());
+        DuplicatesVisitor.printDuplicatedFilePaths();
     }
 }
