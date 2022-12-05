@@ -5,23 +5,22 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DuplicatesVisitor extends SimpleFileVisitor<Path> {
 
     static Map<FileProperty, List<String>> duplicatedFiles = new HashMap<>();
 
     public static void printDuplicatedFilePaths() {
-        Iterator<Map.Entry<FileProperty, List<String>>> iterator = duplicatedFiles.entrySet().iterator();
-        while (iterator.hasNext()) {
-            if (iterator.next().getValue().size() == 1) {
-                iterator.remove();
-            }
-        }
         for (Map.Entry<FileProperty, List<String>> entry : duplicatedFiles.entrySet()) {
-            System.out.println(String.format("%s  -  %s Kb", entry.getKey().getName(), entry.getKey().getSize() / 1024));
-            for (String str : entry.getValue()) {
-                System.out.println(str);
+            if (entry.getValue().size() > 1) {
+                System.out.printf("%s  -  %.1f Kb %n", entry.getKey().getName(), entry.getKey().getSize() / 1024f);
+                for (String str : entry.getValue()) {
+                    System.out.println(str);
+                }
             }
         }
     }
