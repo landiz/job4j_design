@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Search {
     @SuppressWarnings("checkstyle:GenericWhitespace")
@@ -15,15 +17,20 @@ public class Search {
     }
 
     private static void checkArgs(String[] args) {
-        if (args.length < 2) {
+        if (args.length != 2) {
             throw new IllegalArgumentException("Specify the starting folder and extension of the files to be searched.");
         }
         File file = new File(args[0]);
         if (!file.exists()) {
-            throw new IllegalArgumentException(String.format("Folder not exist %s", file.getAbsoluteFile()));
+            throw new IllegalArgumentException(String.format("Folder not exist: %s", args[0]));
         }
         if (!file.isDirectory()) {
-            throw new IllegalArgumentException(String.format("Not directory %s", file.getAbsoluteFile()));
+            throw new IllegalArgumentException(String.format("Not a directory: %s", args[0]));
+        }
+        Pattern pattern = Pattern.compile("^\\.\\S.+");
+        Matcher matcher = pattern.matcher(args[1]);
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException(String.format("Not an extension of the files: %s", args[1]));
         }
     }
 
