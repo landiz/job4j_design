@@ -10,6 +10,9 @@ public class ArgsName {
     public static ArgsName of(String[] args) {
         ArgsName names = new ArgsName();
         names.parse(args);
+        if (args.length == 0) {
+            throw new IllegalArgumentException("");
+        }
         return names;
     }
 
@@ -29,15 +32,11 @@ public class ArgsName {
     }
 
     private void parse(String[] args) {
-        if (args.length == 0) {
-            throw new IllegalArgumentException("");
-        }
         for (String line : args) {
             if (!line.contains("=")) {
                 throw new IllegalArgumentException();
             }
-
-            if (!line.contains("-")) {
+            if (!Character.toString(line.charAt(0)).equals("-")) {
                 throw new IllegalArgumentException();
             }
             String key = line.substring(line.indexOf("-") + 1, line.indexOf("="));
