@@ -8,11 +8,11 @@ public class ArgsName {
     private Map<String, String> values = new HashMap<>();
 
     public static ArgsName of(String[] args) {
-        ArgsName names = new ArgsName();
-        names.parse(args);
         if (args.length == 0) {
             throw new IllegalArgumentException("");
         }
+        ArgsName names = new ArgsName();
+        names.parse(args);
         return names;
     }
 
