@@ -9,7 +9,7 @@ public class ArgsName {
 
     public static ArgsName of(String[] args) {
         if (args.length == 0) {
-            throw new IllegalArgumentException("");
+            throw new IllegalArgumentException("You didn't specify any parameters");
         }
         ArgsName names = new ArgsName();
         names.parse(args);
@@ -26,7 +26,7 @@ public class ArgsName {
 
     public String get(String key) {
         if (!values.containsKey(key)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("There are no value by key: " + key);
         }
         return values.get(key);
     }
@@ -34,15 +34,15 @@ public class ArgsName {
     private void parse(String[] args) {
         for (String line : args) {
             if (!line.contains("=")) {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Missing \"=\" symbol in parameter: " + line);
             }
             if (!Character.toString(line.charAt(0)).equals("-")) {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Missing minus symbol in argument: " + line);
             }
             String key = line.substring(line.indexOf("-") + 1, line.indexOf("="));
             String value = line.substring(line.indexOf("=") + 1);
             if (key.isBlank() || value.isBlank()) {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Missing key or value in parameter: " + line);
             }
             values.put(key, value);
         }
