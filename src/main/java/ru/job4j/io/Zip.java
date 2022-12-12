@@ -34,7 +34,7 @@ public class Zip {
         }
     }
 
-    public static void checkArgs(String[] args) {
+    private static void checkArgs(String[] args) {
         if (args.length != 3) {
             throw new IllegalArgumentException("Enter the folder for archiving, file extensions that will not be included in the archive and the file name for the archive.");
         }
