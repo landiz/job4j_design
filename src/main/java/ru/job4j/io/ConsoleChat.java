@@ -38,10 +38,10 @@ public class ConsoleChat {
         do {
             text = scanner.nextLine();
             if (text != null && !text.isEmpty()) {
-                if (text.equals(STOP)) {
+                if (STOP.equals(text)) {
                     quiet = true;
                 }
-                if (text.equals(CONTINUE)) {
+                if (CONTINUE.equals(text)) {
                     quiet = false;
                 }
                 if (!quiet) {
@@ -54,7 +54,7 @@ public class ConsoleChat {
                     stringsLog.add(text);
                 }
             }
-        } while (!text.equals(OUT));
+        } while (!OUT.equals(text));
         saveLog(stringsLog);
     }
 
