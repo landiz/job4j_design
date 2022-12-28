@@ -8,6 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CSVReaderTest {
 
@@ -131,5 +133,50 @@ class CSVReaderTest {
         String expected = "";
         CSVReader.handle(argsName);
         assertThat(Files.readString(target.toPath())).isEqualTo(expected);
+    }
+
+    @Test
+    void whenFilterAllColumns(@TempDir Path folder) throws Exception {
+        String data = String.join(
+                System.lineSeparator(),
+                "name;age;last_name;education",
+                "Tom;20;Smith;Bachelor",
+                "Jack;25;Johnson;Undergraduate",
+                "William;30;Brown;Secondary special"
+        );
+        File file = folder.resolve("source.csv").toFile();
+        File target = folder.resolve("target.csv").toFile();
+        ArgsName argsName = ArgsName.of(new String[]{
+                "-path=" + file.getAbsolutePath(), "-delimiter=;",
+                "-out=" + target.getAbsolutePath(), "-filter=education,name,age,last_name"});
+        Files.writeString(file.toPath(), data);
+        String expected = String.join(
+                System.lineSeparator(),
+                "education;name;age;last_name",
+                "Bachelor;Tom;20;Smith",
+                "Undergraduate;Jack;25;Johnson",
+                "Secondary special;William;30;Brown"
+        ).concat(System.lineSeparator());
+        CSVReader.handle(argsName);
+        assertThat(Files.readString(target.toPath())).isEqualTo(expected);
+    }
+
+    @Test
+    void whenFilterNotInColumns(@TempDir Path folder) throws Exception {
+        String data = String.join(
+                System.lineSeparator(),
+                "name;age;last_name;education",
+                "Tom;20;Smith;Bachelor",
+                "Jack;25;Johnson;Undergraduate",
+                "William;30;Brown;Secondary special"
+        );
+        File file = folder.resolve("source.csv").toFile();
+        File target = folder.resolve("target.csv").toFile();
+        ArgsName argsName = ArgsName.of(new String[]{
+                "-path=" + file.getAbsolutePath(), "-delimiter=;",
+                "-out=" + target.getAbsolutePath(), "-filter=nofilter"});
+        Files.writeString(file.toPath(), data);
+        Exception exception = assertThrows(Exception.class, () -> CSVReader.handle(argsName));
+        assertEquals("No any filters in csv file", exception.getMessage());
     }
 }

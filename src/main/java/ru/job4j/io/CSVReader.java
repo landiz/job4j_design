@@ -1,6 +1,7 @@
 package ru.job4j.io;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,15 +13,17 @@ import java.util.regex.Pattern;
 
 public class CSVReader {
 
-    public static void handle(ArgsName argsName) throws Exception {
+    public static void handle(ArgsName argsName) throws IOException {
         final var LINE_BREAK = "\n";
-        checkArgs(new String[]{argsName.get("path"), argsName.get("delimiter"), argsName.get("out"), argsName.get("filter")});
         String delimiter = argsName.get("delimiter");
         StringBuilder result = new StringBuilder();
         String[] filterHeaders = argsName.get("filter").split(",");
         try (final Scanner scanner = new Scanner(new File(argsName.get("path")), StandardCharsets.UTF_8)) {
             if (scanner.hasNext()) {
                 List<String> headers = List.of(scanner.nextLine().split(delimiter));
+                if (!headers.containsAll(List.of(filterHeaders))) {
+                    throw new ArrayIndexOutOfBoundsException("No any filters in csv file");
+                }
                 result.append(String.join(delimiter, filterHeaders)).append(LINE_BREAK);
                 while (scanner.hasNext()) {
                     List<String> filteredValues = new ArrayList<>();
@@ -40,32 +43,38 @@ public class CSVReader {
         }
     }
 
-    private static void checkArgs(String[] args) {
-        if (args.length != 4) {
-            throw new IllegalArgumentException("Enter the folder for archiving, file extensions that will not be included in the archive and the file name for the archive.");
-        }
-        File file = new File(args[0]);
+    private static void checkArgs(ArgsName argsName) {
+        File file = new File(argsName.get("path"));
         if (!file.exists()) {
-            throw new IllegalArgumentException(String.format("File not exist: %s", args[0]));
+            throw new IllegalArgumentException(String.format("File not exist: %s", argsName.get("path")));
         }
         Pattern pattern = Pattern.compile(".+\\.csv$");
-        Matcher matcher = pattern.matcher(args[0]);
+        Matcher matcher = pattern.matcher(argsName.get("path"));
         if (!matcher.matches()) {
-            throw new IllegalArgumentException(String.format("Invalid file format for input file: %s", args[0]));
+            throw new IllegalArgumentException(String.format("Invalid file format for input file: %s", argsName.get("path")));
         }
 
         pattern = Pattern.compile(".+\\..+");
-        matcher = pattern.matcher(args[2]);
+        matcher = pattern.matcher(argsName.get("out"));
         if (!matcher.matches()) {
-            if (!"stdout".equals(args[2])) {
-                throw new IllegalArgumentException(String.format("String not equal \"stdout\": %s", args[2]));
+            if (!"stdout".equals(argsName.get("out"))) {
+                throw new IllegalArgumentException(String.format("String not equal \"stdout\": %s", argsName.get("out")));
             }
         } else {
             pattern = Pattern.compile(".+\\.csv$");
-            matcher = pattern.matcher(args[2]);
+            matcher = pattern.matcher(argsName.get("out"));
             if (!matcher.matches()) {
-                throw new IllegalArgumentException(String.format("Invalid file format for output file: %s", args[2]));
+                throw new IllegalArgumentException(String.format("Invalid file format for output file: %s", argsName.get("out")));
             }
         }
+    }
+
+    public static void main(String[] args) throws Exception {
+        if (args.length != 4) {
+            throw new IllegalArgumentException("Enter csv file, delimiter for csv file, output file and output columns.");
+        }
+        ArgsName argsName = ArgsName.of(args);
+        checkArgs(argsName);
+        handle(argsName);
     }
 }
