@@ -1,16 +1,23 @@
-package ru.job4j.serialization.json;
+package ru.job4j.io.serialization.xml;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import javax.xml.bind.annotation.*;
 import java.util.Arrays;
 
+@XmlRootElement(name = "car")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Car {
-    private final boolean truck;
-    private final int power;
-    private final Number number;
-    private final String name;
-    private final String[] statuses;
+    @XmlAttribute
+    private boolean truck;
+    @XmlAttribute
+    private int power;
+    private Number number;
+    private String name;
+    @XmlElementWrapper(name = "statuses")
+    @XmlElement(name = "status")
+    private String[] statuses;
 
     public Car(boolean truck, int power, Number number, String name, String[] statuses) {
         this.truck = truck;
@@ -18,6 +25,9 @@ public class Car {
         this.number = number;
         this.name = name;
         this.statuses = statuses;
+    }
+
+    public Car() {
     }
 
     public static void main(String[] args) {
