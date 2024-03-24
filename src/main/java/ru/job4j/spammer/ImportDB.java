@@ -38,27 +38,14 @@ public class ImportDB {
         try (BufferedReader reader = new BufferedReader(new FileReader(dump))) {
             reader.lines().forEach(s -> list.add(String.valueOf(s)));
             for (String line : list) {
-                if (line.isBlank() || line.startsWith("#")) {
-                    continue;
+                if (!line.isBlank()) {
+                    if (!line.startsWith("#")) {
+                        checkLine(line, list);
+                        String key = line.substring(0, line.indexOf(";"));
+                        String value = line.substring((line.indexOf(";") + 1), line.lastIndexOf(";"));
+                        users.add(new User(key, value));
+                    }
                 }
-                if (";".equals(line)) {
-                    throw new IllegalArgumentException("Line " + (list.indexOf(line) + 1) + "'" + line + "'" + " is missing Key and Value");
-                }
-                if (!line.contains(";")) {
-                    throw new IllegalArgumentException("Line " + (list.indexOf(line) + 1) + " '" + line + "'" + " is missing \";\"");
-                }
-                if ((line.substring(line.indexOf(";") + 1)).isBlank()) {
-                    throw new IllegalArgumentException("Line " + (list.indexOf(line) + 1) + " '" + line + "'" + " is missing Value");
-                }
-                if ((line.substring(0, line.indexOf(";"))).isBlank()) {
-                    throw new IllegalArgumentException("Line " + (list.indexOf(line) + 1) + " '" + line + "'" + " is missing Key");
-                }
-                if (!(line.endsWith(";"))) {
-                    throw new IllegalArgumentException("Line " + (list.indexOf(line) + 1) + " '" + line + "'" + " is missing symbol ';' at the end");
-                }
-                String key = line.substring(0, line.indexOf(";"));
-                String value = line.substring((line.indexOf(";") + 1), line.lastIndexOf(";"));
-                users.add(new User(key, value));
             }
         }
         return users;
@@ -86,9 +73,27 @@ public class ImportDB {
         }
     }
 
+    private void checkLine(String line, List<String> list) {
+        if (";".equals(line)) {
+            throw new IllegalArgumentException("Line " + (list.indexOf(line) + 1) + "'" + line + "'" + " is missing Key and Value");
+        }
+        if (!line.contains(";")) {
+            throw new IllegalArgumentException("Line " + (list.indexOf(line) + 1) + " '" + line + "'" + " is missing \";\"");
+        }
+        if ((line.substring(line.indexOf(";") + 1)).isBlank()) {
+            throw new IllegalArgumentException("Line " + (list.indexOf(line) + 1) + " '" + line + "'" + " is missing Value");
+        }
+        if ((line.substring(0, line.indexOf(";"))).isBlank()) {
+            throw new IllegalArgumentException("Line " + (list.indexOf(line) + 1) + " '" + line + "'" + " is missing Key");
+        }
+        if (!(line.endsWith(";"))) {
+            throw new IllegalArgumentException("Line " + (list.indexOf(line) + 1) + " '" + line + "'" + " is missing symbol ';' at the end");
+        }
+    }
+
     private static class User {
-        String name;
-        String email;
+        final String name;
+        final String email;
 
         public User(String name, String email) {
             this.name = name;
